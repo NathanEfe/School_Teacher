@@ -1,0 +1,14 @@
+.form-tabs button {
+  margin: 5px;
+  padding: 10px;
+  background-color: #ddd;
+  border: none;
+  cursor: pointer;
+}
+.form-tabs button:hover {
+  background-color: #bbb;
+}
+
+.form-section {
+  margin-top: 20px;
+}

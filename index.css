@@ -1,0 +1,15 @@
+.db-widgets {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.db-info h6, 
+.db-info h3 {
+    margin: 0; /* remove extra spacing */
+}
+
+.db-icon img {
+    width: 60px;  /* adjust size */
+    height: auto;
+}

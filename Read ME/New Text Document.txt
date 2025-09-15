@@ -1,0 +1,10 @@
+Url to set max file upload size
+
+C:\wamp64\bin\apache\apache2.4.62.1\bin\php.ini
+
+
+Changed Details
+
+
+upload_max_filesize = 200M
+post_max_size = 200M
