@@ -316,8 +316,6 @@ foreach ($resultsByStudent as $sid => $student) {
     <input type="hidden" name="session" value="<?= $session ?>">
     <input type="hidden" name="term" value="<?= $term ?>">
     <button type="submit" class="btn btn-success">Export Results to Excel</button>
-    <span class="btn btn-danger" onclick="exportToPDF()">Export Results to PDF</span>
-
 </form>
 
 </div>
