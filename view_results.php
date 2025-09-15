@@ -157,7 +157,7 @@ $allTermsSelected = empty($term); //  "" is for 'All Terms'
             <?php if ($res->num_rows > 0): ?>
 
 <div class="table-responsive">
-    <table class="table table-bordered table-striped text-center"id="printTable">
+    <table class="table table-bordered table-striped text-center" id="printTable">
         <thead>
             <tr>
                 <th rowspan="2">Student ID</th>
@@ -316,7 +316,10 @@ foreach ($resultsByStudent as $sid => $student) {
     <input type="hidden" name="session" value="<?= $session ?>">
     <input type="hidden" name="term" value="<?= $term ?>">
     <button type="submit" class="btn btn-success">Export Results to Excel</button>
+    <span class="btn btn-danger" onclick="exportToPDF()">Export Results to PDF</span>
+
 </form>
+
 </div>
             <?php else: ?>
                 <p class="text-muted">No results found for the selected filters.</p>

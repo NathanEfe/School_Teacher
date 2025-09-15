@@ -9,12 +9,15 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+
 
 // ================= FILTERS =================
 $class_id   = $_POST['class_id']   ?? '';
 $subject_id = $_POST['subject_id'] ?? '';
 $session    = $_POST['session']    ?? '';
 $term       = $_POST['term']       ?? '';
+$staff_id   = $_SESSION['staff_id'] ?? 'Unknown';
 
 $where = [];
 if ($class_id != '')   $where[] = "r.class = '$class_id'";
@@ -43,6 +46,11 @@ $sql = "SELECT r.student_id, s.name, c.class_name, sub.subject_name, r.term, r.s
         ORDER BY c.class_id, sub.id, s.student_id";
 $res = $conn->query($sql);
 
+//=============== FETCH CLASS ===============
+    $classRes = $conn->query("SELECT class_name FROM classes WHERE class_id='" . $conn->real_escape_string($class_id) . "'");
+    $classRow = $classRes->fetch_assoc();
+    $className = $classRow['class_name'] ?? '';
+    
 // ================= GROUP RESULTS =================
 $resultsByStudent = [];
 while ($row = $res->fetch_assoc()) {
@@ -110,8 +118,36 @@ foreach ($studentTotals as $sid => $data) {
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
-$row1 = 1;
-$row2 = 2;
+    // Insert logo
+    $drawing = new Drawing();
+    $drawing->setPath('assets/images/delsulogo.jpg');
+    $drawing->setCoordinates('C2');
+    $drawing->setHeight(80);
+    $drawing->setWorksheet($sheet);
+
+    // School Info Section
+    $sheet->mergeCells('A7:H7');
+    $sheet->setCellValue('A7', 'DELSU SECONDARY SCHOOL');
+    $sheet->getStyle('A7')->getFont()->setBold(true)->setSize(18);
+    $sheet->getStyle('A7')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+    $sheet->mergeCells('A8:H8');
+    $sheet->setCellValue('A8', 'P.M.B 1, Abraka, Delta State, Nigeria');
+    $sheet->getStyle('A8')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+    $sheet->mergeCells('A9:H9');
+    $sheet->setCellValue('A9', "Class: $className   Term: $term   Session: $session");
+    $sheet->getStyle('A9')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    $sheet->getStyle('A9')->getFont()->setBold(true);
+
+    $sheet->mergeCells('A10:H10');
+    $sheet->setCellValue('A10', 'Staff ID: ' . $staff_id);
+    $sheet->getStyle('A10')->getFont()->setBold(true)->setSize(14);
+    $sheet->getStyle('A10')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+
+$row1 = 13;
+$row2 = 14;
 $col = 1;
 
 // Helper to set cell by numeric index
@@ -168,7 +204,7 @@ foreach ($extraCols as $extra) {
 }
 
 // ================= DATA ROWS =================
-$rowIndex = 3;
+$rowIndex = 15;
 foreach ($resultsByStudent as $sid => $student) {
     $col = 1;
     setCell($sheet, $col++, $rowIndex, $student['info']['student_id']);
@@ -222,7 +258,7 @@ foreach (range(1, $col) as $c) {
 }
 
 // Bold + centered headers
-$headerRange = "A1:" . Coordinate::stringFromColumnIndex($col-1) . "2";
+$headerRange = "A13:" . Coordinate::stringFromColumnIndex($col-1) . "13";
 $sheet->getStyle($headerRange)->applyFromArray([
     'font' => ['bold' => true],
     'alignment' => [
@@ -243,7 +279,7 @@ $sheet->getStyle($headerRange)->applyFromArray([
 ]);
 
 // Borders for data rows
-$dataRange = "A3:" . Coordinate::stringFromColumnIndex($col-1) . ($rowIndex-1);
+$dataRange = "A14:" . Coordinate::stringFromColumnIndex($col-1) . ($rowIndex-1);
 $sheet->getStyle($dataRange)->applyFromArray([
     'borders' => [
         'allBorders' => [
@@ -258,7 +294,12 @@ $sheet->getStyle($dataRange)->applyFromArray([
 ]);
 
 // Freeze header row
-$sheet->freezePane("A3");
+$sheet->freezePane("A15");
+
+
+    // Protect the entire sheet
+    $sheet->getProtection()->setSheet(true);
+    $sheet->getProtection()->setPassword('Password');
 
 // ================= OUTPUT =================
 $filename = "Students_Results.xlsx";
