@@ -82,9 +82,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sheet->getStyle("A{$headerRow1}")->getFont()->setBold(true);
     $sheet->mergeCells("A{$headerRow1}:A{$headerRow2}");
 
+    //Apply border bottom to Student ID
+    $sheet->getStyle("A{$headerRow2}")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
+
     $sheet->setCellValue("B{$headerRow1}", 'Student Name');
     $sheet->getStyle("B{$headerRow1}")->getFont()->setBold(true);
     $sheet->mergeCells("B{$headerRow1}:B{$headerRow2}");
+
+    //Apply border bottom to Student Name
+    $sheet->getStyle("B{$headerRow2}")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
+
+        //Define Colors
+        $subjectColors = [
+            'FFFACD', // LemonChiffon
+            'E6E6FA', // Lavender
+            'F0FFF0', // Honeydew
+            'FFE4E1', // MistyRose
+            'F5F5DC', // Beige
+        ]; 
+
+        $subjectIndex = 0;
 
     $colIndex = 3; // start from column C
     foreach ($subjects as $subject) {
@@ -96,9 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sheet->setCellValue("{$colStart}{$headerRow1}", $subject['subject_name']);
         $sheet->getStyle("{$colStart}{$headerRow1}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle("{$colStart}{$headerRow1}")->getFont()->setBold(true);
-        $sheet->getStyle("{$colStart}{$headerRow1}:{$colEnd}{$headerRow1}")->getBorders()->getOutline()->setBorderStyle(Border::BORDER_THICK)->setColor(new Color('FF0000FF'));
+        $sheet->getStyle("{$colStart}{$headerRow1}:{$colEnd}{$headerRow1}")->getBorders()->getOutline()->setBorderStyle(Border::BORDER_THICK)->setColor(new Color('FF000000'));
 
         $sheet->getStyle("{$colStart}{$headerRow1}:{$colEnd}{$headerRow1}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF87CEEB'); 
+
+        $sheet->getStyle("{$colStart}{$headerRow1}:{$colEnd}{$headerRow1}")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
 
 
         // Sub-columns (CA1, CA2, Exam, Total, Grade)
@@ -107,6 +126,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex + 2) . $headerRow2, 'Exam(60)');
         $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex + 3) . $headerRow2, 'Total');
         $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex + 4) . $headerRow2, 'Grade');
+
+        $sheet->getStyle(Coordinate::stringFromColumnIndex($colIndex) . $headerRow2 . ':' . Coordinate::stringFromColumnIndex($colIndex + 4) . $headerRow2)
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $sheet->getStyle(Coordinate::stringFromColumnIndex($colIndex) . $headerRow2 . ':' . Coordinate::stringFromColumnIndex($colIndex + 4) . $headerRow2)
+            ->getBorders()->getOutline()->setBorderStyle(Border::BORDER_THICK)->setColor(new Color('FF000000'));
+        
+
+        //Apply different colors to subject header
+        $color = $subjectColors[$subjectIndex % count($subjectColors)];
+        $subjectIndex++;
+
+        // Apply fill color to subject header row (row 13)
+        $sheet->getStyle("{$colStart}{$headerRow1}:{$colEnd}{$headerRow1}")
+            ->getFill()->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setARGB($color);
+
+        // Also color the CA/Exam/Total/Grade header row (row 14)
+        $sheet->getStyle("{$colStart}{$headerRow2}:{$colEnd}{$headerRow2}")
+            ->getFill()->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setARGB($color);
+
 
         // Apply bold font to those cells
         $sheet->getStyle(Coordinate::stringFromColumnIndex($colIndex) . $headerRow2 . ':' . Coordinate::stringFromColumnIndex($colIndex + 4) . $headerRow2)
@@ -152,6 +193,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $rowCount = $row - 1;
+
+
+    //Add Vertical Borders
+    $colIndex = 3;
+    foreach ($subjects as $subject) {
+        $colStart = Coordinate::stringFromColumnIndex($colIndex);
+        $colEnd   = Coordinate::stringFromColumnIndex($colIndex + 4);
+
+        // Apply left border to first column in subject
+        $sheet->getStyle("{$colStart}15:{$colStart}{$rowCount}")
+            ->getBorders()->getLeft()->setBorderStyle(Border::BORDER_THICK);
+
+        // Apply right border to last column in subject
+        $sheet->getStyle("{$colEnd}15:{$colEnd}{$rowCount}")
+            ->getBorders()->getRight()->setBorderStyle(Border::BORDER_THICK);
+
+        // Apply bottom border to last column in subject
+        $sheet->getStyle("{$colEnd}15:{$colEnd}{$rowCount}")
+            ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
+
+        // Apply bottom border to first column in subject
+        $sheet->getStyle("{$colStart}15:{$colStart}{$rowCount}")
+            ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
+
+        //Apply border bottom to all subcolumns
+        for ($i = 0; $i < 5; $i++) {
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex + $i);
+        $sheet->getStyle("{$colLetter}15:{$colLetter}{$rowCount}")
+            ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
+    }
+
+
+        $colIndex += 5; // Move to next subject block
+
+            // Add vertical border between Student ID and Student Name
+        $sheet->getStyle("A{$headerRow1}:A{$rowCount}")
+        ->getBorders()->getRight()->setBorderStyle(Border::BORDER_THICK);
+
+        //Add Horizontal border top for Student ID
+         $sheet->getStyle("A{$headerRow1}:A{$rowCount}")
+        ->getBorders()->getTop()->setBorderStyle(Border::BORDER_THICK);
+
+        //Add Horizontal border bottom for Student ID
+         $sheet->getStyle("A{$headerRow1}:A{$rowCount}")
+        ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
+
+
+        //Add Horizontal border top for Student Name
+         $sheet->getStyle("B{$headerRow1}:B{$rowCount}")
+        ->getBorders()->getTop()->setBorderStyle(Border::BORDER_THICK);
+
+        //Add Horizontal border bottom for Student Name
+         $sheet->getStyle("B{$headerRow1}:B{$rowCount}")
+        ->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THICK);
+
+    }
+
+
+
+    
 
 
 

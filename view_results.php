@@ -157,7 +157,7 @@ $allTermsSelected = empty($term); //  "" is for 'All Terms'
             <?php if ($res->num_rows > 0): ?>
 
 <div class="table-responsive">
-    <table class="table table-bordered table-striped text-center" id="printTable">
+    <table class="table table-bordered table-striped text-center" id="reports">
         <thead>
             <tr>
                 <th rowspan="2">Student ID</th>
@@ -310,13 +310,15 @@ foreach ($resultsByStudent as $sid => $student) {
 
         </tbody>
     </table>
-    <form method="post" action="export_students_results.php">
+    <form method="post" action="export_students_results.php" style="display:inline-block;">
     <input type="hidden" name="class_id" value="<?= $class_id ?>">
     <input type="hidden" name="subject_id" value="<?= $subject_id ?>">
     <input type="hidden" name="session" value="<?= $session ?>">
     <input type="hidden" name="term" value="<?= $term ?>">
     <button type="submit" class="btn btn-success">Export Results to Excel</button>
 </form>
+    <button class="btn btn-danger mt-4" onclick="downloadPDF()">Download Via PDF</button>
+
 
 </div>
             <?php else: ?>
@@ -325,5 +327,24 @@ foreach ($resultsByStudent as $sid => $student) {
         </div>
     </div>
 <?php endif; ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+  function downloadPDF() {
+    const element = document.getElementById('reports');
 
+    const opt = {
+      margin:       0.5,
+      filename:     'reports.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, scrollY: 0 },
+      jsPDF: { unit: 'in', format: [50, 12.5], orientation: 'landscape' },
+      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
+      html2canvas: { scale: 3, scrollY: 0 },
+      pagebreak: { mode: ['css', 'legacy'] }
+
+    };
+
+    html2pdf().set(opt).from(element).save();
+  }
+</script>
 <?php include('assets/inc/footer.php'); ?>
