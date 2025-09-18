@@ -1,5 +1,3 @@
-
-
 <?php
 // Path to your PDF file
 $filePath = 'uploads/Timetable/TimeTable.pdf'; 

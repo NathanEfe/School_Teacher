@@ -4,10 +4,11 @@
 error_reporting(0);
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
-    exit();
+    exit;
 }
+
 
 include('db_connect.php');
 

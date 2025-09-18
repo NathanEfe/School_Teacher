@@ -1,4 +1,14 @@
-<?php include('assets/inc/header.php'); ?>
+<?php session_start();
+include('assets/inc/header.php');
+include('db_connect.php'); 
+
+if (!isset($_SESSION["staff_id"])) {
+    header("Location: login/login.php");
+    exit;
+}
+?>
+
+
 <link rel="stylesheet" href="assets/css/messages.css">
 <div class="chat-container">
     <div class="chat-header bg-primary">

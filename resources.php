@@ -1,4 +1,14 @@
-<?php include('assets/inc/header.php'); ?>
+<?php 
+session_start();
+include('assets/inc/header.php');
+
+if (!isset($_SESSION["staff_id"])) {
+    header("Location: login/login.php");
+    exit;
+}
+
+
+?>
 <h3>Add Resources</h3>
 
 <?php

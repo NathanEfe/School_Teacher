@@ -1,9 +1,10 @@
 <?php
-error_reporting(0);
+error_reporting(E_ALL);
 session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
+
+if (!isset($_SESSION["staff_id"])) {
+    header("Location: login/login.php");
+    exit;
 }
 
 include('db_connect.php');
@@ -40,7 +41,7 @@ $conn->close();
 ?>
 
 <?php
-      include('assets/inc/header.php');
+    include('assets/inc/header.php');
 ?>
 
 <?php if (!empty($success_msg)): ?>

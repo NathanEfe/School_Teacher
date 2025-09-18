@@ -1,5 +1,13 @@
 <?php
+session_start();
 include('assets/inc/header.php');
+include('db_connect.php');
+
+if (!isset($_SESSION["staff_id"])) {
+    header("Location: login/login.php");
+    exit;
+}
+
 ?>
 <h3 class="mb-4">View Resources</h3>
 
@@ -37,6 +45,9 @@ $sessions = $conn->query("SELECT DISTINCT session FROM resources ORDER BY sessio
 ?>
 
 <!-- =============== FILTER FORM ================= -->
+ <div class="card">
+  <div class="card-header bg-primary text-white">Filter Resources</div>
+  <div class="card-body">
 <form method="get" class="row mb-3" id="filterForm">
     <div class="col-md-3 mb-4">
         <label>Class</label>
@@ -75,6 +86,8 @@ $sessions = $conn->query("SELECT DISTINCT session FROM resources ORDER BY sessio
         <button type="submit" class="btn btn-primary">Filter</button>
     </div>
 </form>
+            </div>
+            </div>
 
 <!-- =============== RESOURCES TABLE ================= -->
 

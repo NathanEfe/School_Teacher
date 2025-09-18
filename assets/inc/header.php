@@ -1,22 +1,7 @@
-<?php 
-// require('../libs/config/Dbase.php');
-      // $data = new Config;
-      // $department = $_SESSION['department'];
-
- session_start();
-if (!isset($_SESSION["staff_id"])) {
-    header("Location: login/login.php");
-    exit;
-}
-?>
-
-
-
-
 <!doctype html>
 <html lang="en" data-pc-preset="preset-1" data-pc-sidebar-caption="true" data-pc-direction="ltr" dir="ltr" data-pc-theme="light">
   <head>
-    <title>Dashboard | <?php echo $_SESSION['staff_id']; ?> Delsu Staff School</title>
+    <title>Dashboard | Delsu Staff School</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -316,15 +301,15 @@ if (!isset($_SESSION["staff_id"])) {
                   <div class="flex mb-1 items-center">
                     <div class="shrink-0">
                       <!-- <img src="assets/images/user/avatar-2.jpg" alt="user-image" class="w-100 rounded-full"> -->
-                       <?php include ('inc.php');?>
+                      <!-- <img src="./assets/images/user/avatar-2.jpg" alt="Profile Picture" class="w-100 rounded-full" id="profilePic" width="100" height="100"> -->
+                      <?php include ('inc.php');?>
                       <img src="<?= !empty($user['profile_picture']) ? htmlspecialchars($user['profile_picture']) : './assets/images/user/avatar-2.jpg' ?>" alt="Profile Picture" class="w-100 rounded-full" id="profilePic" width="100" height="100">
-
                     </div>
                     <div class="grow ms-3">
-                      <h6 class="mb-1 text-white"><?php echo $_SESSION['staff_id']; ?></h6>
+                      <h6 class="mb-1 text-white"></h6>
                       <span class="text-white">
-                        <h6 class="mb-1 text-white">Hospital No: 4582</h6>
-                        <h6 class="mb-1 text-white">Campus: Abraka Campus 2</h6>
+                        <h6 class="mb-1 text-white">School No: 4582</h6>
+                        <h6 class="mb-1 text-white">Campus: Abraka Campus 1</h6>
                       </span>
                     </div>
                   </div>

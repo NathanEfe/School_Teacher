@@ -39,7 +39,13 @@ $conn->close();
 
 
 <?php
-      include('assets/inc/header.php');
+session_start();
+include('assets/inc/header.php');
+
+if (!isset($_SESSION["staff_id"])) {
+    header("Location: login/login.php");
+    exit;
+}
 ?>
 
 <?php if (!empty($success_msg)): ?>

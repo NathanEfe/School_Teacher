@@ -1,6 +1,11 @@
 ﻿<?php
+session_start();
 include('assets/inc/header.php');
 // $data->pageContent($_SESSION['role']);
+if (!isset($_SESSION["staff_id"])) {
+    header("Location: login/login.php");
+    exit;
+}
 
 
 ?>

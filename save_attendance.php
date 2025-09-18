@@ -43,9 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
 } else {
-    echo "Invalid request.";
+    echo "<div class='alert alert-danger'>Invalid request.</div>";
 }
 ?>
-
-
-If I insert into morning session and try to insert into evening session Its giving msg = already taken instead of inserting into evening session. 

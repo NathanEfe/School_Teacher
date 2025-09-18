@@ -1,23 +1,23 @@
 <?php 
-      include('assets/inc/header.php');
+session_start();
+include('assets/inc/header.php');
 
-      // $data->pageContent($_SESSION['role']);
+if (!isset($_SESSION["staff_id"])) {
+    header("Location: login/login.php");
+    exit;
+}
+
 ?>
 
 
 <?php
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login/login.php");
-    exit();
-}
-
 include('db_connect.php');
 
-$user_id = $_SESSION['user_id'];
+$staff_id = $_SESSION['staff_id'];
 
-$stmt = $conn->prepare("SELECT * FROM teacher_register WHERE user_id = ?");
-$stmt->bind_param("s", $user_id);
+$stmt = $conn->prepare("SELECT * FROM teacher_register WHERE staff_id = ?");
+$stmt->bind_param("s", $staff_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();

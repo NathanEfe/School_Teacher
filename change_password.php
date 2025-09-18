@@ -1,11 +1,13 @@
 <?php
 error_reporting(0);
 session_start();
-require 'db_connect.php';
+include('db_connect.php'); 
 
-if (!isset($_SESSION['staff_id'])) {
-    die("Unauthorized access.");
+if (!isset($_SESSION["staff_id"])) {
+    header("Location: login/login.php");
+    exit;
 }
+require 'db_connect.php';
 
 
 $message = "";

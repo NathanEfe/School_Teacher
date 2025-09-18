@@ -1,15 +1,7 @@
 <?php
 session_start();
 
-$host = "localhost";
-$db = "school";
-$user = "root";
-$pass = "";
-
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include ('../db_connect.php');
 
 $error_msg = "";
 $success_msg = "";
@@ -48,7 +40,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 ?>
-
 
 
 

@@ -10,6 +10,8 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Style\Protection;
+
 
 
 // ================= FILTERS =================
@@ -114,6 +116,25 @@ foreach ($studentTotals as $sid => $data) {
     $prevTotal = $data['total'];
 }
 
+//=============== FETCH CLASS ===============
+$classRes = $conn->query("SELECT class_name FROM classes WHERE class_id='" . $conn->real_escape_string($class_id) . "'");
+$classRow = $classRes->fetch_assoc();
+$className = $classRow['class_name'] ?? 'All_Classes';
+
+// =============== FETCH SUBJECT ===============
+if (!empty($subject_id)) {
+    $subRes = $conn->query("SELECT subject_name FROM jss2_subjects WHERE id='" . $conn->real_escape_string($subject_id) . "'");
+    $subRow = $subRes->fetch_assoc();
+    $subjectName = $subRow['subject_name'] ?? 'All_Subjects';
+} else {
+    $subjectName = 'All_Subjects';
+}
+
+// ✅ Define Session & Term *before* you print them in header
+$sessionName = !empty($session) ? $session : 'All_Sessions';
+$termName    = !empty($term) ? $term : 'All_Terms';
+
+
 // ================= BUILD SPREADSHEET =================
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
@@ -136,7 +157,7 @@ $sheet = $spreadsheet->getActiveSheet();
     $sheet->getStyle('A8')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
     $sheet->mergeCells('A9:H9');
-    $sheet->setCellValue('A9', "Class: $className   Term: $term   Session: $session");
+    $sheet->setCellValue('A9', "Class: $className   Term: $termName   Session: $sessionName");
     $sheet->getStyle('A9')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
     $sheet->getStyle('A9')->getFont()->setBold(true);
 
@@ -177,14 +198,14 @@ $col++;
 foreach ($subjectsArr as $subj) {
     $startCol = $col;
     setCell($sheet, $col, $row1, $subj);
-    $endCol = $allTermsSelected ? $col + 4 : $col + 4;
+    $endCol = $allTermsSelected ? $col + 4 : $col + 3;
     $sheet->mergeCells(Coordinate::stringFromColumnIndex($startCol).$row1.':'.Coordinate::stringFromColumnIndex($endCol).$row1);
 
     if ($allTermsSelected) {
         setCell($sheet, $col++, $row2, "1st Term");
         setCell($sheet, $col++, $row2, "2nd Term");
         setCell($sheet, $col++, $row2, "3rd Term");
-        setCell($sheet, $col++, $row2, "Grand Total");
+        setCell($sheet, $col++, $row2, "Total");
         setCell($sheet, $col++, $row2, "Average");
     } else {
         setCell($sheet, $col++, $row2, "1st CA");
@@ -301,8 +322,24 @@ $sheet->freezePane("A15");
     $sheet->getProtection()->setSheet(true);
     $sheet->getProtection()->setPassword('Password');
 
+$remarksCol = Coordinate::stringFromColumnIndex($col - 1); 
+$lastRow = $rowIndex - 1; 
+$remarksRange = "{$remarksCol}15:{$remarksCol}{$lastRow}";
+
+$sheet->getStyle($remarksRange)
+      ->getProtection()
+      ->setLocked(Protection::PROTECTION_UNPROTECTED);
+
+
+
+
 // ================= OUTPUT =================
-$filename = "Students_Results.xlsx";
+$filename = "Results_{$className}_{$subjectName}_{$sessionName}_{$termName}";
+$filename = preg_replace('/[^A-Za-z0-9_\-]/', '_', $filename); 
+$filename .= ".xlsx"; // append extension AFTER sanitization
+
+ob_end_clean(); // clear output buffer
+
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 header("Content-Disposition: attachment;filename=\"$filename\"");
 header('Cache-Control: max-age=0');
@@ -310,3 +347,6 @@ header('Cache-Control: max-age=0');
 $writer = new Xlsx($spreadsheet);
 $writer->save('php://output');
 exit;
+
+
+

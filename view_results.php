@@ -70,11 +70,11 @@ $allTermsSelected = empty($term); //  "" is for 'All Terms'
                 <label for="subject_id" class="form-label">Subject</label>
                 <select name="subject_id" id="subject_id" class="form-select">
                     <option value="">All Subjects</option>
-                    <!-- <?php while ($s = $subjects->fetch_assoc()): ?>
+                    <?php while ($s = $subjects->fetch_assoc()): ?>
                         <option value="<?= $s['id'] ?>" <?= ($s['id'] == $subject_id ? 'selected' : '') ?>>
                             <?= htmlspecialchars($s['subject_name']) ?>
                         </option>
-                    <?php endwhile; ?> -->
+                    <?php endwhile; ?>
                 </select>
             </div>
 
@@ -123,7 +123,7 @@ $allTermsSelected = empty($term); //  "" is for 'All Terms'
 
 
 <!-- jQuery (for AJAX) -->
-<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
         $('#class_id').change(function() {
@@ -146,7 +146,7 @@ $allTermsSelected = empty($term); //  "" is for 'All Terms'
             $('#class_id').trigger('change');
         <?php endif; ?>
     });
-</script> -->
+</script>
 
 
 <!-- =============== RESULTS TABLE ================= -->
@@ -167,22 +167,29 @@ $allTermsSelected = empty($term); //  "" is for 'All Terms'
 
                 <?php
                 // Get subjects for table structure
-                $subjectList = $conn->query("SELECT * FROM jss2_subjects ORDER BY id");
+                if ($subject_id != '') {
+                    $subjectList = $conn->query("SELECT * FROM jss2_subjects WHERE id = '$subject_id' ORDER BY id");
+                } else {
+                    $subjectList = $conn->query("SELECT * FROM jss2_subjects ORDER BY id");
+                }
                 $subjectsArr = [];
                 while ($sub = $subjectList->fetch_assoc()) {
                     $subjectsArr[] = $sub['subject_name'];
                     echo "<th colspan='5' style='text-align:center'>" . htmlspecialchars($sub['subject_name']) . "</th>";
                 }
                 ?>
-                <th rowspan="2">Position</th> 
+                <?php if ($allTermsSelected): ?>
+                    <th rowspan="2">Grand Total</th>
+                <?php endif; ?>
+                <th rowspan="2">Position</th>
             </tr>
             <tr>
                 <?php
                 foreach ($subjectsArr as $subj) {
                     if ($allTermsSelected) {
-                        echo "<th>1st Term</th><th>2nd Term</th><th>3rd Term</th><th>Grand Total</th><th>Average</th>";
+                        echo "<th>1st Term</th><th>2nd Term</th><th>3rd Term</th><th>Total</th><th>Average</th>";
                     } else {
-                        echo "<th>1st CA</th><th>2nd CA</th><th>Exam</th><th>Total</th><th>Grade</th>";
+                        echo "<th>1st CA</th><th>2nd CA</th><th>Exam</th><th>Total Mark</th><th>Grade</th>";
                     }
                 }
                 ?>
@@ -300,9 +307,23 @@ foreach ($resultsByStudent as $sid => $student) {
         }
     }
 
-    // ✅ Show calculated position
-    $position = $rankings[$sid] ?? '-';
-    echo "<td>{$position}</td>";
+// ✅ Add grand total only when All Terms is selected
+if ($allTermsSelected) {
+    $grandTotalPerStudent = 0;
+    foreach ($student['subjects'] as $subj => $scores) {
+        $grandTotalPerStudent +=
+            ($scores['1st Term'] ?? 0) +
+            ($scores['2nd Term'] ?? 0) +
+            ($scores['3rd Term'] ?? 0);
+    }
+    echo "<td>{$grandTotalPerStudent}</td>";
+}
+
+
+// ✅ Show calculated position once
+$position = $rankings[$sid] ?? '-';
+echo "<td>{$position}</td>";
+
 
     echo "</tr>";
 }
@@ -317,7 +338,7 @@ foreach ($resultsByStudent as $sid => $student) {
     <input type="hidden" name="term" value="<?= $term ?>">
     <button type="submit" class="btn btn-success">Export Results to Excel</button>
 </form>
-    <button class="btn btn-danger mt-4" onclick="downloadPDF()">Download Via PDF</button>
+    <!-- <button class="btn btn-danger mt-4" onclick="downloadPDF()">Download Via PDF</button> -->
 
 
 </div>
@@ -329,22 +350,19 @@ foreach ($resultsByStudent as $sid => $student) {
 <?php endif; ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
-  function downloadPDF() {
-    const element = document.getElementById('reports');
+function downloadPDF() {
+  const element = document.getElementById('reports');
 
-    const opt = {
-      margin:       0.5,
-      filename:     'reports.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, scrollY: 0 },
-      jsPDF: { unit: 'in', format: [50, 12.5], orientation: 'landscape' },
-      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
-      html2canvas: { scale: 3, scrollY: 0 },
-      pagebreak: { mode: ['css', 'legacy'] }
+  const opt = {
+    margin:       0.5,
+    filename:     'reports.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 3, scrollY: 0 },
+    jsPDF:        { unit: 'in', format: [50, 12.5], orientation: 'landscape' },
+    pagebreak:    { mode: ['css', 'legacy'] }
+  };
 
-    };
-
-    html2pdf().set(opt).from(element).save();
-  }
+  html2pdf().set(opt).from(element).save();
+}
 </script>
 <?php include('assets/inc/footer.php'); ?>
