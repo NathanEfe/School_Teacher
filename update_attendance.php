@@ -69,7 +69,6 @@ if (!isset($_SESSION["staff_id"])) {
   <?php if (isset($_GET['msg']) && $_GET['msg'] == 'updated'): ?>
     <div class="alert alert-success">Attendance updated successfully!</div>
   <?php endif; ?>
-
   <!-- Filter Form -->
    <div class="card">
     <div class="card-header bg-info text-white">Update Attendance</div>
@@ -106,6 +105,7 @@ if (!isset($_SESSION["staff_id"])) {
     </div>
   <!-- Update Form -->
   <?php if ($students && $students->num_rows > 0): ?>
+  <div class="table-responsive">
   <div class="card shadow-sm mb-4">
     <div class="card-header bg-primary text-white">
       <strong>Update Attendance Records for <?= htmlspecialchars(date("F j, Y", strtotime($date))) ?> (<?= htmlspecialchars($session) ?>)</strong>
@@ -151,28 +151,21 @@ if (!isset($_SESSION["staff_id"])) {
                           <?= ($row['status'] === "Absent") ? "checked" : "" ?>>
                     <label class="form-check-label" for="absent_<?= $row['student_id']; ?>">Absent</label>
                 </div>
-
-                <!-- <div class="form-check form-check-inline">
-                    <input class="form-check-input" 
-                          type="radio" 
-                          name="attendance[<?= $row['student_id']; ?>]" 
-                          id="late_<?= $row['student_id']; ?>" 
-                          value="Late"
-                          <?= ($row['status'] === "Late") ? "checked" : "" ?>>
-                    <label class="form-check-label" for="late_<?= $row['student_id']; ?>">Late</label>
-                </div> -->
             </td>
           </tr>
           <?php endwhile; ?>
           </tbody>
         </table>
+        </div>
+
 
         <div class="text-end">
-          <button type="submit" class="btn btn-success">Save Changes</button>
+          <button type="submit" class="btn btn-success mb-4 ml-4 mr-4">Save Changes</button>
         </div>
       </form>
     </div>
   </div>
+  
   <?php elseif($class_id && $date && $session): ?>
     <div class="alert alert-warning">
       No attendance records found for this class, date, and session. 

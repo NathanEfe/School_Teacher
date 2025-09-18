@@ -152,7 +152,7 @@ $allTermsSelected = empty($term); //  "" is for 'All Terms'
 <!-- =============== RESULTS TABLE ================= -->
 <?php if ($class_id || $subject_id || $session || $term || $student_id): ?>
     <div class="card mt-4">
-        <div class="card-header bg-primary text-white">Results For <strong><?= htmlspecialchars($term) ?? 'All' ?> Term </strong></div>
+        <div class="card-header bg-primary text-white">Results For <strong><?= htmlspecialchars($term) ?? 'All' ?> Term(s) </strong></div>
         <div class="card-body">
             <?php if ($res->num_rows > 0): ?>
 

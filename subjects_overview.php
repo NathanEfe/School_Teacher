@@ -8,6 +8,8 @@ if (!isset($_SESSION["staff_id"])) {
 }
 ?>
 <h3>Subjects Overview</h3>
+<link rel="stylesheet" href="pagination.css">
+
 <?php
 //search bar
 include 'db_connect.php';
@@ -25,6 +27,39 @@ $result = $conn->query($query);
 if ($result->num_rows == 0) {
     echo "<p class='text-danger'>No subject found for '<strong>" . htmlspecialchars($search) . "</strong>'</p>";
 }
+?>
+
+<?php
+//Pagination
+
+// Pagination setup
+$limit = 10; // records per page
+$page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+$offset = ($page - 1) * $limit;
+
+// Search handling
+$search = '';
+$where = '';
+if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
+    $search = $conn->real_escape_string($_GET['search']);
+    $where  = "WHERE name LIKE '%$search%'";
+}
+
+// Count total records (for pagination)
+$countQuery  = "SELECT COUNT(*) AS total FROM jss2_subjects $where";
+$countResult = $conn->query($countQuery);
+$totalRows   = $countResult->fetch_assoc()['total'];
+$totalPages  = ceil($totalRows / $limit);
+
+// Main query with LIMIT & OFFSET
+$query = "SELECT * FROM jss2_subjects $where ORDER BY id ASC LIMIT $limit OFFSET $offset";
+$result = $conn->query($query);
+
+if ($result->num_rows == 0 && !empty($search)) {
+    echo "<p class='text-danger'>No record found for '<strong>" . htmlspecialchars($search) . "</strong>'</p>";
+}
+
 ?>
 
 
@@ -56,6 +91,7 @@ if ($result->num_rows == 0) {
         <tbody>
            <?php
         if ($result->num_rows > 0) {
+        $i = $offset + 1;
         $i = 1;
         while ($row = $result->fetch_assoc()) {
         echo "<tr>
@@ -75,6 +111,29 @@ if ($result->num_rows == 0) {
     ?>
         </tbody>
       </table>
+      
+      <!-- Pagination -->
+      <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+          <?php if ($page > 1): ?>
+            <li class="page-item">
+              <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= urlencode($search) ?>">Previous</a>
+            </li>
+          <?php endif; ?>
+
+          <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+            <li class="page-item <?= ($p == $page) ? 'active' : '' ?>">
+              <a class="page-link" href="?page=<?= $p ?>&search=<?= urlencode($search) ?>"><?= $p ?></a>
+            </li>
+          <?php endfor; ?>
+
+          <?php if ($page < $totalPages): ?>
+            <li class="page-item">
+              <a class="page-link" href="?page=<?= $page + 1 ?>&search=<?= urlencode($search) ?>">Next</a>
+            </li>
+          <?php endif; ?>
+        </ul>
+      </nav>
     </div>
   </div>
       <button class="btn btn-success mb-4" onclick="exportToExcel('my-table-2', 'Subjects Overview')">Export to Excel</button>

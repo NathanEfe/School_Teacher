@@ -141,8 +141,8 @@ if (!empty($class_id) && !empty($session)) {
       <div class="card-header bg-primary text-white">
     <strong>Attendance List</strong> For <strong> <?= htmlspecialchars(date("F j, Y", strtotime($date))) ?> <?= htmlspecialchars($session) ?> Session</strong>
       </div>
-
-      <div class="card-body">
+    <div class="table-responsive">
+            <div class="card-body">
           <table class="table table-bordered align-middle">
       <thead class="table-dark">
         <tr>
@@ -178,13 +178,6 @@ if (!empty($class_id) && !empty($session)) {
                           value="Absent">
                     <label class="form-check-label" for="absent_<?= $row['student_id']; ?>">Absent</label>
                 </div>
-                <!-- <div class="form-check">
-                    <input class="form-check-input" type="radio" 
-                          name="attendance[<?= $row['student_id']; ?>]" 
-                          id="late_<?= $row['student_id']; ?>" 
-                          value="Late">
-                    <label class="form-check-label" for="late_<?= $row['student_id']; ?>">Late</label>
-                </div> -->
               </td>
 
             </tr>
@@ -195,6 +188,8 @@ if (!empty($class_id) && !empty($session)) {
       </tbody>
     </table>
       </div>
+      </div>
+
     </div>
   
 

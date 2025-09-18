@@ -91,61 +91,57 @@ if (!empty($class_id) && !empty($date)) {
         </form>
       </div>
     </div>
-  <?php if (!empty($records)): ?>
-    <div class="card">
-      <div class="card-header bg-primary text-white">  
-        <p>Attendance Records for <?= htmlspecialchars(date("F j, Y", strtotime($date))) ?></p>
-      </div>
-      <div class="card-body">
-  <table class="table table-bordered">
-    <thead class="table-light">
-      <tr>
-        <th>#</th>
-        <th>Student Name</th>
-        <th>Student ID</th>
-        <th>Morning Status</th>
-        <th>Evening Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php $i=1; foreach ($records as $row): ?>
-        <tr>
-          <td><?= $i++ ?></td>
-          <td><?= htmlspecialchars($row['name']) ?></td>
-          <td><?= htmlspecialchars($row['student_id']) ?></td>
-          <td>
-            <?php if ($row['Morning'] === 'Present'): ?>
-              <span class="badge bg-success text-white">Present</span>
-            <?php elseif ($row['Morning'] === 'Absent'): ?>
-              <span class="badge bg-danger text-white">Absent</span>
-            <?php else: ?>
-              <span class="badge bg-secondary text-white">Not Taken</span>
-            <?php endif; ?>
-
-          </td>
-          <td>
-            <?php if ($row['Evening'] === 'Present'): ?>
-              <span class="badge bg-success text-white">Present</span>
-            <?php elseif ($row['Evening'] === 'Absent'): ?>
-              <span class="badge bg-danger text-white">Absent</span>
-            <?php else: ?>
-              <span class="badge bg-secondary text-white">Not Taken</span>
-            <?php endif; ?>
-
-
-          </td>
-        </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
-  
-  <?php elseif (!empty($class_id) && !empty($date)): ?>
-    <div class="alert alert-warning">No records found.</div>
-  <?php endif; ?>
-      </div>
+ <?php if (!empty($records)): ?>
+  <div class="card">
+    <div class="card-header bg-primary text-white">  
+      <p class="mb-0">Attendance Records for <?= htmlspecialchars(date("F j, Y", strtotime($date))) ?></p>
     </div>
-</div>
-
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Student Name</th>
+              <th>Student ID</th>
+              <th>Morning Status</th>
+              <th>Evening Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php $i=1; foreach ($records as $row): ?>
+              <tr>
+                <td><?= $i++ ?></td>
+                <td><?= htmlspecialchars($row['name']) ?></td>
+                <td><?= htmlspecialchars($row['student_id']) ?></td>
+                <td>
+                  <?php if ($row['Morning'] === 'Present'): ?>
+                    <span class="badge bg-success text-white">Present</span>
+                  <?php elseif ($row['Morning'] === 'Absent'): ?>
+                    <span class="badge bg-danger text-white">Absent</span>
+                  <?php else: ?>
+                    <span class="badge bg-secondary text-white">Not Taken</span>
+                  <?php endif; ?>
+                </td>
+                <td>
+                  <?php if ($row['Evening'] === 'Present'): ?>
+                    <span class="badge bg-success text-white">Present</span>
+                  <?php elseif ($row['Evening'] === 'Absent'): ?>
+                    <span class="badge bg-danger text-white">Absent</span>
+                  <?php else: ?>
+                    <span class="badge bg-secondary text-white">Not Taken</span>
+                  <?php endif; ?>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div> <!-- /.table-responsive -->
+    </div> <!-- /.card-body -->
+  </div> <!-- /.card -->
+<?php else: ?>
+  <div class="alert alert-warning">No records found.</div>
+<?php endif; ?>
 </body>
 </html>
 <?php include ('assets/inc/footer.php')?>
