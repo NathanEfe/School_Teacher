@@ -1,14 +1,15 @@
 ﻿<?php
-session_start();
-include('assets/inc/header.php');
-// $data->pageContent($_SESSION['role']);
+ session_start();
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
-
+include('assets/inc/header.php');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 ?>
+
 
 
 <link rel="stylesheet" href="assets/css/index.css">

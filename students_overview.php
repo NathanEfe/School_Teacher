@@ -39,6 +39,7 @@ if ($result->num_rows == 0) {
     <div class="card-header bg-primary text-white">
       <strong>Student Records</strong>
     </div>
+    <div class="table-responsive">
     <div class="card-body">
       <table class="table table-bordered table-striped mb-0" id="my-table">
         <thead class="table-dark">
@@ -93,6 +94,7 @@ if ($result->num_rows == 0) {
     </div>
   </div>
 </div>
+  </div>
 
 
 

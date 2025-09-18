@@ -69,7 +69,7 @@
               </a>
             </li>
             <li class="pc-item">
-              <a href="calendar.php" class="pc-link">
+              <a href="calendar.php" class="pc-link" target="_blank">
                 <span class="pc-micon">
                   <i data-feather="calendar"></i>
                 </span>
@@ -77,7 +77,7 @@
               </a>
             </li>
             <li class="pc-item">
-              <a href="timetable.php" class="pc-link">
+              <a href="timetable.php" class="pc-link" target="_blank">
                 <span class="pc-micon">
                   <i data-feather="table"></i>
                 </span>
@@ -162,15 +162,14 @@
                 </li>
               </ul>
             </li>
-             <li class="pc-item">
+             <!-- <li class="pc-item">
               <a href="messages.php" class="pc-link">
                 <span class="pc-micon">
                   <i data-feather="mail"></i>
                 </span>
                 <span class="pc-mtext" data-i18n="Messages">Messages</span>
               </a>
-              
-            </li>
+            </li> -->
              <li class="pc-item pc-hasmenu">
               <a href="#!" class="pc-link">
                 <span class="pc-micon">
@@ -260,7 +259,7 @@
               </a>
             </div>
             </li>
-            <li class="dropdown pc-h-item">
+            <!-- <li class="dropdown pc-h-item">
               <a class="pc-head-link dropdown-toggle me-0" data-pc-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                 <i data-feather="bell"></i>
                 <span class="badge bg-success-500 text-white rounded-full z-10 absolute right-0 top-0">1</span>
@@ -268,7 +267,7 @@
               <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown p-2">
                 <div class="dropdown-header flex items-center justify-between py-4 px-5">
                   <h5 class="m-0">Notifications</h5>
-                  <!-- <a href="#!" class="btn btn-link btn-sm">Mark all read</a> -->
+                  <a href="#!" class="btn btn-link btn-sm">Mark all read</a>
                 </div>
                 <div class="dropdown-body header-notification-scroll relative py-4 px-5" style="max-height: calc(100vh - 215px)">
                   <p class="text-span mb-3">Today</p>
@@ -291,7 +290,7 @@
                   <a href="#!" class="text-danger-500 hover:text-danger-600 focus:text-danger-600 active:text-danger-600">Clear all Notifications</a>
                 </div>
               </div>
-            </li>
+            </li> -->
             <li class="dropdown pc-h-item header-user-profile">
               <a class="pc-head-link dropdown-toggle arrow-none me-0" data-pc-toggle="dropdown" href="#" role="button" aria-haspopup="false" data-pc-auto-close="outside" aria-expanded="false">
                 <i data-feather="user"></i>
@@ -308,8 +307,8 @@
                     <div class="grow ms-3">
                       <h6 class="mb-1 text-white"></h6>
                       <span class="text-white">
-                        <h6 class="mb-1 text-white">School No: 4582</h6>
-                        <h6 class="mb-1 text-white">Campus: Abraka Campus 1</h6>
+                        <h6 class="mb-1 text-white">Staff ID: <?= htmlspecialchars($user['staff_id']) ?></h6>
+                        <h6 class="mb-1 text-white">Campus: Abraka, Campus 1</h6>
                       </span>
                     </div>
                   </div>
