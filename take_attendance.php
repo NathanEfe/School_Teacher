@@ -1,11 +1,10 @@
 <?php 
 session_start();
-include('assets/inc/header.php');
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
+include('assets/inc/header.php');
 ?>
 <h3>Take Attendance</h3>
 <span><p class="text-start mt-4">Date: <?= date('l, F j, Y') ?></p></span>

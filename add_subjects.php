@@ -1,13 +1,12 @@
 <?php 
 session_start();
-include('assets/inc/header.php');
-include('db_connect.php'); 
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
 
+include('assets/inc/header.php');
+include('db_connect.php'); 
 
 // Fetch classes
 $classes = $conn->query("SELECT class_id, class_name FROM classes ORDER BY class_name ASC");

@@ -1,12 +1,11 @@
 <?php 
 session_start();
-include('assets/inc/header.php');
-include('db_connect.php');
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
+
+include('assets/inc/header.php');
 ?>
 <?php
 include('db_connect.php');
@@ -63,8 +62,9 @@ if (!empty($class_id) && !empty($date)) {
 </head>
 <body>
 
-<div class="container mt-4">
 <h3>View Attendance</h3>
+<div class="container mt-4">
+
   <!-- Filter Form -->
    <div class="card mt-4">
     <div class="card-header bg-info text-white">View Attendance</div>

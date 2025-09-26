@@ -1,11 +1,11 @@
 <?php
 session_start();
-include('assets/inc/header.php');
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
+
+include('assets/inc/header.php');
 include 'db_connect.php'; // DB connection
 
 // ================== VALIDATE INPUT ==================
@@ -61,82 +61,9 @@ if (!$student) {
   </div>
 </div>
 
-<?php
-// ================== FETCH RESULTS ==================
-$sql = "SELECT sub.subject_name, r.term, r.session,
-               r.first_ca, r.second_ca, r.exam, r.total, r.created_at
-        FROM results r
-        JOIN jss2_subjects sub ON r.subject = sub.id
-        WHERE r.student_id = ?
-        ORDER BY r.session DESC, r.term ASC, sub.subject_name ASC";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $student_id);
-$stmt->execute();
-$res = $stmt->get_result();
-?>
 
 
 <?php
-// ================== FETCH RESULTS ==================
-$sql = "SELECT sub.subject_name, r.term, r.session,
-               r.first_ca, r.second_ca, r.exam, r.total, r.created_at
-        FROM results r
-        JOIN jss2_subjects sub ON r.subject = sub.id
-        WHERE r.student_id = ?
-        ORDER BY r.session DESC, r.term ASC, sub.subject_name ASC";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $student_id);
-$stmt->execute();
-$res = $stmt->get_result();
-?>
-
-
-<?php if ($res->num_rows > 0): ?>
-
-<div class="card">
-<div class="card-header bg-primary text-white">Academic Results</div>
-<div class="card-body">
-<div class="table-responsive">
-  <table class="table table-bordered table-striped">
-    <thead class="table-dark">
-      <tr>
-        <th>Subject</th>
-        <th>Term</th>
-        <th>Session</th>
-        <th>1st CA</th>
-        <th>2nd CA</th>
-        <th>Exam</th>
-        <th>Total</th>
-        <th>Date Added</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php while ($row = $res->fetch_assoc()): ?>
-        <tr>
-          <td><?= htmlspecialchars($row['subject_name']) ?></td>
-          <td><?= htmlspecialchars($row['term']) ?></td>
-          <td><?= htmlspecialchars($row['session']) ?></td>
-          <td><?= htmlspecialchars($row['first_ca']) ?></td>
-          <td><?= htmlspecialchars($row['second_ca']) ?></td>
-          <td><?= htmlspecialchars($row['exam']) ?></td>
-          <td><strong><?= htmlspecialchars($row['total']) ?></strong></td>
-          <td><?= date('d-m-Y', strtotime($row['created_at'])) ?></td>
-        </tr>
-      <?php endwhile; ?>
-    </tbody>
-  </table>
-</div>
-<?php else: ?>
-  <div class="alert alert-info">No results found for this student.</div>
-<?php endif; ?>
-    </div>
-</div>
-
-
-<?php
-$stmt->close();
 include('assets/inc/footer.php');
 ?>
 

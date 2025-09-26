@@ -1,13 +1,12 @@
 <?php 
 session_start();
-include('assets/inc/header.php');
-include('db_connect.php'); 
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
- ?>
+include('assets/inc/header.php');
+?>
+
 <h3>Broad Sheet</h3>
 
 <?php
@@ -47,6 +46,7 @@ while ($row = $res->fetch_assoc()) {
     $sid = $row['student_id'];
     if (!isset($students[$sid])) {
         $students[$sid] = [
+            'student_id' => $row['student_id'],
             'name'       => $row['name'],
             'class_name' => $row['class_name'],
             'scores'     => array_fill_keys(array_keys($subjects), null),
@@ -75,26 +75,34 @@ usort($students, function ($a, $b) {
 
 $position = 0;
 $prevTotal = null;
-$skip = 1;
+$rank = 0;
 foreach ($students as $index => &$st) {
+    $rank++; // always increase rank
     if ($st['grandTotal'] !== $prevTotal) {
-        $position = $index + 1;
+        $position = $rank;
         $st['position'] = $position;
     } else {
-        $st['position'] = $position; // same position for tie
+        $st['position'] = $position; // tie keeps same position
     }
     $prevTotal = $st['grandTotal'];
 }
 unset($st);
 
-// Re-index by student_id again
+// Re-index by student_id (NOT name)
 $studentsById = [];
 foreach ($students as $st) {
-    $studentsById[$st['name']] = $st; // keeping name as key to preserve sorting
+    $studentsById[$st['student_id']] = $st;
 }
+
 ?>
 
 <!-- =============== FILTER FORM ================= -->
+ <div class="card mt-4">
+    <div class="card-header bg-primary text-white">
+        View Broad Sheet
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning"><span>Select a <span class="alert-link">class, session, and term</span> to view the broad sheet.</span></div>
 <form method="get" class="row g-3 mb-4" id="filterForm">
     <div class="col-md-3">
         <label for="class_id" class="form-label">Class</label>
@@ -115,7 +123,7 @@ foreach ($students as $st) {
         <select name="session" id="session" class="form-select" required>
             <option value="">-- Select Session --</option>
             <?php 
-            $sessions = $conn->query("SELECT DISTINCT session FROM results ORDER BY id DESC");
+            $sessions = $conn->query("SELECT DISTINCT session FROM school ORDER BY id DESC");
             while ($ss = $sessions->fetch_assoc()): ?>
                 <option value="<?= $ss['session'] ?>" <?= ($ss['session'] == $session ? 'selected' : '') ?>>
                     <?= htmlspecialchars($ss['session']) ?>
@@ -129,7 +137,7 @@ foreach ($students as $st) {
         <select name="term" id="term" class="form-select">
             <option value="">---Select Term---</option>
             <?php 
-            $terms = $conn->query("SELECT DISTINCT term FROM results ORDER BY id ASC");
+            $terms = $conn->query("SELECT DISTINCT term FROM school ORDER BY id ASC");
             while ($t = $terms->fetch_assoc()): ?>
                 <option value="<?= $t['term'] ?>" <?= ($t['term'] == $term ? 'selected' : '') ?>>
                     <?= htmlspecialchars($t['term']) ?>
@@ -138,54 +146,63 @@ foreach ($students as $st) {
         </select>
     </div>
 
-    <div class="col-md-2 d-flex align-items-end">
+    <div class="col-md-2 d-flex align-items-end mt-4">
         <button type="submit" class="btn btn-primary w-100">Filter</button>
     </div>
 </form>
+    </div>
+ </div>
 
 <!-- =============== RESULTS TABLE ================= -->
 <?php if ($class_id && $session): ?>
- <div class="card mt-4">
-  <div class="card-header bg-primary text-white">
-    Broad Sheet
+<div class="card mt-4">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <span>Broad Sheet</span>
   </div>
-  <div class="card-body">
-      <?php if (!empty($studentsById)): ?>
-          <table class="table table-bordered table-striped table-sm text-center">
-              <thead>
-                  <tr>
-                      <th>Student ID</th>
-                      <th>Name</th>
-                      <th>Class</th>
-                      <?php foreach ($subjects as $sub): ?>
-                          <th><?= htmlspecialchars($sub) ?></th>
-                      <?php endforeach; ?>
-                      <th>Grand Total</th>
-                      <th>Average</th>
-                      <th>Position</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <?php foreach ($studentsById as $sid => $st): ?>
-                      <tr>
-                          <td><?= htmlspecialchars($sid) ?></td>
-                          <td><?= htmlspecialchars($st['name']) ?></td>
-                          <td><?= htmlspecialchars($st['class_name']) ?></td>
-                          <?php foreach ($st['scores'] as $score): ?>
-                              <td><?= $score !== null ? htmlspecialchars($score) : '-' ?></td>
-                          <?php endforeach; ?>
-                          <td><strong><?= $st['grandTotal'] ?></strong></td>
-                          <td><strong><?= $st['average'] ?></strong></td>
-                          <td><strong><?= $st['position'] ?></strong></td>
-                      </tr>
-                  <?php endforeach; ?>
-              </tbody>
-          </table>
-      <?php else: ?>
-          <p class="text-muted">No results found for the selected filters.</p>
-      <?php endif; ?>
+  <div class="card-body p-0">
+    <?php if (!empty($studentsById)): ?>
+      <div class="table-responsive" style="max-height:70vh; overflow-y:auto;">
+        <table id="broadSheetTable" class="table table-bordered table-striped table-sm text-center align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Class</th>
+              <?php foreach ($subjects as $sub): ?>
+                <th><?= htmlspecialchars($sub) ?></th>
+              <?php endforeach; ?>
+              <th>Grand Total</th>
+              <th>Average</th>
+              <th>Position</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($studentsById as $st): ?>
+              <tr>
+                <td><?= htmlspecialchars($st['student_id']) ?></td>
+                <td class="text-start"><?= htmlspecialchars($st['name']) ?></td>
+                <td><?= htmlspecialchars($st['class_name']) ?></td>
+                <?php foreach ($st['scores'] as $score): ?>
+                  <td><?= $score !== null ? htmlspecialchars($score) : '-' ?></td>
+                <?php endforeach; ?>
+                <td><strong><?= $st['grandTotal'] ?></strong></td>
+                <td><strong><?= $st['average'] ?></strong></td>
+                <td><strong><?= $st['position'] ?></strong></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+ <form method="post" action="export_broadsheet.php">
+    <input type="hidden" name="class_id" value="<?= $class_id ?>">
+    <input type="hidden" name="session" value="<?= $session ?>">
+    <input type="hidden" name="term" value="<?= $term ?>">
+    <button type="submit" class="btn btn-success mt-4 mb-4">Export Results to Excel</button>
+</form>
+      </div>
+    <?php else: ?>
+      <p class="text-muted p-3">No results found for the selected filters.</p>
+    <?php endif; ?>
   </div>
- </div>
+</div>
 <?php endif; ?>
-
 <?php include('assets/inc/footer.php'); ?>

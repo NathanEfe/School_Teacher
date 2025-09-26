@@ -27,7 +27,7 @@
     </div> -->
     <!-- [ Pre-loader ] End -->
     <!-- [ Sidebar Menu ] start -->
-    <nav class="pc-sidebar" style="overflow-y:scroll">
+    <nav class="pc-sidebar">
       <div class="navbar-wrapper">
         <div class="m-header flex items-center py-4 px-6 h-header-height">
           <a href="index.php" class="b-brand flex items-center gap-3">
@@ -47,7 +47,7 @@
               <a href="#!" class="pc-link">
                 <span class="pc-micon">
                   <i data-feather="home"></i>
-                </span>
+                </span>s
                 <span class="pc-mtext" data-i18n="Dashboard">Dashboard</span>
                 <span class="pc-arrow">
                   <i class="ti ti-chevron-right"></i>

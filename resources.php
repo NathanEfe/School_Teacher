@@ -1,15 +1,11 @@
 <?php 
 session_start();
-include('assets/inc/header.php');
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
-
-
+include('assets/inc/header.php');
 ?>
-<h3>Add Resources</h3>
 
 <?php
 include 'db_connect.php'; // db connection
@@ -124,8 +120,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 }
 ?>
-
+<h3 class="mt-4 mb-4">Add Resource</h3>
 <!-- =============== FILTER FORM ================= -->
+ <div class="card">
+  <div class="card-header bg-primary text-white">Add Resources</div>
+<div class="card-body">
+  <div class="alert alert-warning">Select the <a class="alert-link">Class, Subject, and Session</a> You would like to add the Material/Resource For!</div>
 <form method="get" class="row mb-3" id="filterForm">
     <div class="col-md-3 mt-4">
         <label>Class</label>
@@ -164,6 +164,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" class="btn btn-primary">Filter</button>
     </div>
 </form>
+</div>
+ </div>
 
 
 

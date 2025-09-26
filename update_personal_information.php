@@ -40,12 +40,11 @@ $conn->close();
 
 <?php
 session_start();
-include('assets/inc/header.php');
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
+include('assets/inc/header.php');
 ?>
 
 <?php if (!empty($success_msg)): ?>

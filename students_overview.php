@@ -1,11 +1,11 @@
 <?php 
 session_start();
-include('assets/inc/header.php');
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
+
+include('assets/inc/header.php');
 ?>
 <h3>Students Overview</h3>
 <link rel="stylesheet" href="pagination.css">

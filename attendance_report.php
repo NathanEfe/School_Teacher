@@ -46,19 +46,18 @@ if ($class_id && $from_date && $to_date) {
 
 <?php 
 session_start();
-include('assets/inc/header.php');
-include('db_connect.php'); 
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
+include('assets/inc/header.php');
+include('db_connect.php'); 
+
+
 ?>
-
-
-<div class="container mt-4">
   <h3 class="mb-4">Attendance Report</h3>
 
+<div class="container mt-4">
   <!-- Filter Form -->
    <div class="card">
     <div class="card-header bg-info text-white">Attendance Report</div>

@@ -1,4 +1,13 @@
-<?php include('assets/inc/header.php'); ?>
+<?php 
+session_start();
+
+if (!isset($_SESSION["staff_id"])) {
+    header("Location: login/login.php");
+    exit;
+}
+
+include('assets/inc/header.php');
+?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <?php
@@ -13,19 +22,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['result_file'])) {
     $class   = $conn->real_escape_string($_POST['class_id']);
     $session = $conn->real_escape_string($_POST['session']);
     $term    = $conn->real_escape_string($_POST['term']);
-    $subject = $conn->real_escape_string($_POST['subject_id']); // ✅ selected subject
+    $subject = $conn->real_escape_string($_POST['subject_id']); // subject
 
     try {
         $spreadsheet = IOFactory::load($uploadedFile);
         $sheet = $spreadsheet->getActiveSheet();
 
-        // ✅ Extract Staff ID (row 10, cell A10)
+        // Extract Staff ID (row 10, cell A10)
         $staffCell = $sheet->getCell('A10')->getValue();
         $staff_id  = trim(str_replace('Staff ID:', '', $staffCell));
 
         $inserted = 0;
 
-        // ✅ Loop through students (starting row 15)
+        // Loop through students (starting row 15)
         foreach ($sheet->getRowIterator(15) as $row) {
             $rowIndex  = $row->getRowIndex();
             $studentId = trim($sheet->getCell("A{$rowIndex}")->getValue());
@@ -33,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['result_file'])) {
 
             if (!$studentId || !$studentName) continue;
 
-            // ✅ Only one subject upload, fixed columns (C to G)
+            // Only one subject upload, fixed columns (C to G)
             $firstCA  = (int) $sheet->getCell("C{$rowIndex}")->getCalculatedValue();
             $secondCA = (int) $sheet->getCell("D{$rowIndex}")->getCalculatedValue();
             $exam     = (int) $sheet->getCell("E{$rowIndex}")->getCalculatedValue();
@@ -138,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['result_file'])) {
                     <select name="session" id="session" class="form-control" required>
                         <option value="">--Select Session--</option>
                         <?php
-                        $sessRes = $conn->query("SELECT DISTINCT session FROM school ORDER BY session DESC");
+                        $sessRes = $conn->query("SELECT DISTINCT session FROM school ORDER BY session ASC");
                         while ($row = $sessRes->fetch_assoc()) {
                             echo "<option value='{$row['session']}'>{$row['session']}</option>";
                         }
@@ -152,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['result_file'])) {
                     <select name="term" id="term" class="form-control" required>
                         <option value="">--Select Term--</option>
                         <?php
-                        $termRes = $conn->query("SELECT DISTINCT term FROM school ORDER BY id DESC");
+                        $termRes = $conn->query("SELECT DISTINCT term FROM school ORDER BY id ASC");
                         while ($row = $termRes->fetch_assoc()) {
                             echo "<option value='{$row['term']}'>{$row['term']}</option>";
                         }
@@ -160,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['result_file'])) {
                     </select>
                 </div>
 
-                <!-- ✅ Subject Filter -->
+                <!-- Subject Filter -->
                 <div class="col-md-3 mt-4">
                     <label class="text-secondary">Subject:</label>
                     <select name="subject_id" id="subject_id" class="form-control" required>
@@ -206,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['result_file'])) {
                 html: `Are you sure you want to upload results for:<br>
                <b>Class:</b> ${className}<br>
                <b>Session:</b> ${sessionName}<br>
-               <b>Term:</b> ${termName}<br>
+               <b>Term:</b> ${termName} Term<br>
                <b>Subject:</b> ${subjectName}`,
                 icon: "warning",
                 showCancelButton: true,

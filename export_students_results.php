@@ -82,6 +82,18 @@ while ($row = $res->fetch_assoc()) {
     }
 }
 
+//================= ADD RESULT SUFFIX ==================
+function ordinal_suffix($num) {
+    if (!in_array(($num % 100), [11, 12, 13])) {
+        switch ($num % 10) {
+            case 1:  return $num . 'st';
+            case 2:  return $num . 'nd';
+            case 3:  return $num . 'rd';
+        }
+    }
+    return $num . 'th';
+}
+
 // ================= CALCULATE RANKING =================
 $studentTotals = [];
 foreach ($resultsByStudent as $sid => $student) {
@@ -130,7 +142,7 @@ if (!empty($subject_id)) {
     $subjectName = 'All_Subjects';
 }
 
-// ✅ Define Session & Term *before* you print them in header
+// Define Session & Term *before* you print them in header
 $sessionName = !empty($session) ? $session : 'All_Sessions';
 $termName    = !empty($term) ? $term : 'All_Terms';
 
@@ -217,16 +229,26 @@ foreach ($subjectsArr as $subj) {
 }
 
 // Extra columns
-$extraCols = ["Grand Total", "Average", "Position", "Remarks"];
+$extraCols = ["Grand Total", "Average", "Position", "Remarks/Comments"];
 foreach ($extraCols as $extra) {
     setCell($sheet, $col, $row1, $extra);
     $sheet->mergeCells(Coordinate::stringFromColumnIndex($col).$row1.':'.Coordinate::stringFromColumnIndex($col).$row2);
     $col++;
 }
 
+// ================= SORT RESULTS BY POSITION =================
+uksort($resultsByStudent, function($a, $b) use ($rankings) {
+    return ($rankings[$a] ?? PHP_INT_MAX) <=> ($rankings[$b] ?? PHP_INT_MAX);
+});
+
+//uksort() reorders $resultsByStudent keys ($sid) based on the student’s position from $rankings.
+
+//Students without a rank are pushed to the bottom using PHP_INT_MAX.
+
 // ================= DATA ROWS =================
 $rowIndex = 15;
 foreach ($resultsByStudent as $sid => $student) {
+
     $col = 1;
     setCell($sheet, $col++, $rowIndex, $student['info']['student_id']);
     setCell($sheet, $col++, $rowIndex, $student['info']['name']);
@@ -236,36 +258,48 @@ foreach ($resultsByStudent as $sid => $student) {
     $grandTotal = 0;
     $subjectCount = 0;
 
-    foreach ($subjectsArr as $subj) {
-        if ($allTermsSelected) {
-            $t1 = $student['subjects'][$subj]['1st Term'] ?? 0;
-            $t2 = $student['subjects'][$subj]['2nd Term'] ?? 0;
-            $t3 = $student['subjects'][$subj]['3rd Term'] ?? 0;
-            $gT = ($t1 ?: 0) + ($t2 ?: 0) + ($t3 ?: 0);
-            $avg = ($t1 || $t2 || $t3) ? round($gT / (($t1?1:0)+($t2?1:0)+($t3?1:0)), 2) : 0;
-            setCell($sheet, $col++, $rowIndex, $t1 ?: '-');
-            setCell($sheet, $col++, $rowIndex, $t2 ?: '-');
-            setCell($sheet, $col++, $rowIndex, $t3 ?: '-');
-            setCell($sheet, $col++, $rowIndex, $gT);
-            setCell($sheet, $col++, $rowIndex, $avg);
-            $grandTotal += $gT; $subjectCount++;
-        } else {
-            $data = $student['subjects'][$subj] ?? [];
-            setCell($sheet, $col++, $rowIndex, $data['first_ca'] ?? '-');
-            setCell($sheet, $col++, $rowIndex, $data['second_ca'] ?? '-');
-            setCell($sheet, $col++, $rowIndex, $data['exam'] ?? '-');
-            setCell($sheet, $col++, $rowIndex, $data['total'] ?? '-');
-            setCell($sheet, $col++, $rowIndex, $data['grade'] ?? '-');
-            if (!empty($data['total'])) {
-                $grandTotal += (int)$data['total']; $subjectCount++;
-            }
+
+foreach ($subjectsArr as $subj) {
+    if ($allTermsSelected) {
+        $t1 = $student['subjects'][$subj]['1st Term'] ?? 0;
+        $t2 = $student['subjects'][$subj]['2nd Term'] ?? 0;
+        $t3 = $student['subjects'][$subj]['3rd Term'] ?? 0;
+
+        $gT = ($t1 ?: 0) + ($t2 ?: 0) + ($t3 ?: 0);
+        $count = ($t1 ? 1 : 0) + ($t2 ? 1 : 0) + ($t3 ? 1 : 0);
+        $avg = $count > 0 ? round($gT / $count, 2) : '-';
+
+        setCell($sheet, $col++, $rowIndex, $t1 ?: '-');
+        setCell($sheet, $col++, $rowIndex, $t2 ?: '-');
+        setCell($sheet, $col++, $rowIndex, $t3 ?: '-');
+        setCell($sheet, $col++, $rowIndex, $gT);
+        setCell($sheet, $col++, $rowIndex, $avg);
+
+        if ($count > 0) {
+            $grandTotal += $gT;
+            $subjectCount += $count > 0 ? 1 : 0;
+        }
+    } else {
+        $data = $student['subjects'][$subj] ?? [];
+        setCell($sheet, $col++, $rowIndex, $data['first_ca'] ?? '-');
+        setCell($sheet, $col++, $rowIndex, $data['second_ca'] ?? '-');
+        setCell($sheet, $col++, $rowIndex, $data['exam'] ?? '-');
+        setCell($sheet, $col++, $rowIndex, $data['total'] ?? '-');
+        setCell($sheet, $col++, $rowIndex, $data['grade'] ?? '-');
+        if (!empty($data['total'])) {
+            $grandTotal += (int)$data['total'];
+            $subjectCount++;
         }
     }
-
+}
+    echo $grandTotal;
+    echo '<br>';
     $avg = $subjectCount > 0 ? round($grandTotal / $subjectCount, 2) : 0;
     setCell($sheet, $col++, $rowIndex, $grandTotal);
     setCell($sheet, $col++, $rowIndex, $avg);
-    setCell($sheet, $col++, $rowIndex, $rankings[$sid] ?? '-');
+    $rank = $rankings[$sid] ?? '-';
+    $position = is_numeric($rank) ? ordinal_suffix($rank) : '-';
+    setCell($sheet, $col++, $rowIndex, $position);
     setCell($sheet, $col++, $rowIndex, ""); // remarks placeholder
 
     $rowIndex++;
@@ -334,7 +368,7 @@ $sheet->getStyle($remarksRange)
 
 
 // ================= OUTPUT =================
-$filename = "Results_{$className}_{$subjectName}_{$sessionName}_{$termName}";
+$filename = "Results_{$className}_{$subjectName}_{$sessionName}_Session_{$termName}_Term";
 $filename = preg_replace('/[^A-Za-z0-9_\-]/', '_', $filename); 
 $filename .= ".xlsx"; // append extension AFTER sanitization
 
@@ -348,5 +382,4 @@ $writer = new Xlsx($spreadsheet);
 $writer->save('php://output');
 exit;
 
-
-
+?>

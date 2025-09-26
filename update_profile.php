@@ -1,5 +1,3 @@
-<!-- Update Profile Section -->
-
 <?php
 error_reporting(0);
 session_start();
@@ -17,7 +15,7 @@ $success_msg = "";
 $error_msg = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $user_id = $_SESSION['user_id'];
+    $staff_id = $_SESSION['staff_id'];
 
     $full_name   = trim($_POST['full_name']);
     $email       = trim($_POST['email']);
@@ -43,15 +41,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $query = "UPDATE teacher_register SET full_name = ?, email = ?, phone_number = ?, address = ?" . 
              ($profile_pic_path ? ", profile_picture = ?" : "") . 
-             " WHERE user_id = ?";
+             " WHERE staff_id = ?";
 
 
     if ($profile_pic_path) {
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("ssssss", $full_name, $email, $phone, $address, $profile_pic_path, $user_id);
+        $stmt->bind_param("ssssss", $full_name, $email, $phone, $address, $profile_pic_path, $staff_id);
     } else {
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("sssss", $full_name, $email, $phone, $address, $user_id);
+        $stmt->bind_param("sssss", $full_name, $email, $phone, $address, $staff_id);
     }
 
     if ($stmt->execute()) {
@@ -70,9 +68,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 // display profile picture
 $conn = new mysqli("localhost", "root", "", "school");
 
-$user_id = $_SESSION['user_id'];
-$stmt = $conn->prepare("SELECT full_name, email, profile_picture FROM teacher_register WHERE user_id = ?");
-$stmt->bind_param("s", $user_id);
+$staff_id = $_SESSION['staff_id'];
+$stmt = $conn->prepare("SELECT full_name, email, profile_picture FROM teacher_register WHERE staff_id = ?");
+$stmt->bind_param("s", $staff_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();

@@ -5,9 +5,6 @@ if (!isset($_SESSION["staff_id"])) {
     exit;
 }
 include('assets/inc/header.php');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 ?>
 
 
@@ -84,7 +81,7 @@ ini_set('display_errors', 1);
 
     <br>
   <div class="quick-links dashboard">
-    <a href="todays_classes.php">
+    <a href="timetable.php" target="_blank">
       <div class="card blue">
 
       <h2>View Todays Classes</h2>
@@ -117,14 +114,14 @@ ini_set('display_errors', 1);
 
     </div>
     </a>
-    <a href="messages.php">
+    <a href="resources.php">
       <div class="card blue">
 
-      <h2>Messages</h2>
+      <h2>View Resources</h2>
 
       <div class="number"></div>
 
-      <div class="desc text-white text-center">View Your Messages</div>
+      <div class="desc text-white text-center">View Your Resources</div>
 
     </div>
     </a>

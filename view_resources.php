@@ -1,13 +1,11 @@
 <?php
 session_start();
-include('assets/inc/header.php');
-include('db_connect.php');
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
-
+include('assets/inc/header.php');
+include('db_connect.php');
 ?>
 <h3 class="mb-4">View Resources</h3>
 

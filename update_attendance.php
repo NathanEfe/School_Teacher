@@ -48,12 +48,11 @@ if ($class_id && $date && $session) {
 
 <?php 
 session_start();
-include('assets/inc/header.php');
-
 if (!isset($_SESSION["staff_id"])) {
     header("Location: login/login.php");
     exit;
 }
+include('assets/inc/header.php');
  ?>
 
 <!DOCTYPE html>
@@ -63,9 +62,9 @@ if (!isset($_SESSION["staff_id"])) {
   <title>Update Attendance</title>
 </head>
 <body class="bg-light">
-<div class="container mt-4">
-  <h3 class="mb-4">Update Attendance</h3>
+    <h3 class="mb-4">Update Attendance</h3>
 
+<div class="container mt-4">
   <?php if (isset($_GET['msg']) && $_GET['msg'] == 'updated'): ?>
     <div class="alert alert-success">Attendance updated successfully!</div>
   <?php endif; ?>
