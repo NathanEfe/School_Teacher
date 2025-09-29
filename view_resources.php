@@ -84,8 +84,8 @@ $sessions = $conn->query("SELECT DISTINCT session FROM resources ORDER BY sessio
         <button type="submit" class="btn btn-primary">Filter</button>
     </div>
 </form>
-            </div>
-            </div>
+</div>
+</div>
 
 <!-- =============== RESOURCES TABLE ================= -->
 

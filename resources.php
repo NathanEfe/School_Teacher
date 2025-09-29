@@ -39,6 +39,8 @@ $res = $conn->query($sql);
 $classes  = $conn->query("SELECT * FROM classes ORDER BY class_id");
 $subjects = $conn->query("SELECT * FROM jss2_subjects ORDER BY id");
 $sessions = $conn->query("SELECT DISTINCT session FROM results ORDER BY id DESC");
+
+$subject = $conn->query("SELECT id, subject_name from jss2_subjects ORDER BY id")
 ?>
 
 
@@ -64,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             return;
         }
 
-        $uploadDir = "uploads/resources/";
+        $uploadDir = "../Resources/";
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
@@ -178,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- Add Resource Form -->
   <div class="card shadow-sm mt-4 mb-4">
     <div class="card-header bg-primary text-white">
-      <strong>Add New Resource</strong>
+      <strong>Add New Resource For <?= htmlspecialchars($session); ?></strong>
     </div>
     <div class="card-body">
       <form method="POST" enctype="multipart/form-data" id="uploadResource">
@@ -286,7 +288,8 @@ document.addEventListener('DOMContentLoaded', function () {
         html: `Are you sure you want to upload resource for:<br>
                <b>Class:</b> ${className}<br>
                <b>Subject:</b> ${subjectName}<br>
-               <b>Session:</b> ${sessionName}<br>`,
+               <b>Session:</b> ${sessionName}<br>
+               <p class="text-danger">Once you upload, this process cannot be undone</p>`,
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Yes, Upload",
@@ -299,7 +302,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 });
 </script>
-
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

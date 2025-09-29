@@ -91,13 +91,15 @@ if (!empty($class_id) && !empty($date)) {
         </form>
       </div>
     </div>
- <?php if (!empty($records)): ?>
+
+ <?php if (!empty($class_id) && !empty($date)): ?>
   <div class="card">
     <div class="card-header bg-primary text-white">  
       <p class="mb-0">Attendance Records for <?= htmlspecialchars(date("F j, Y", strtotime($date))) ?></p>
     </div>
     <div class="card-body">
       <div class="table-responsive">
+        <?php if(!empty($records)) :?>
         <table class="table table-bordered table-striped align-middle">
           <thead class="table-light">
             <tr>
@@ -136,12 +138,13 @@ if (!empty($class_id) && !empty($date)) {
             <?php endforeach; ?>
           </tbody>
         </table>
+        <?php else: ?>
+        <div class="alert alert-warning">No records found.</div>
+        <?php endif; ?>
       </div> <!-- /.table-responsive -->
     </div> <!-- /.card-body -->
   </div> <!-- /.card -->
-<?php else: ?>
-  <div class="alert alert-warning">No records found.</div>
-<?php endif; ?>
+  <?php endif;?>
 </body>
 </html>
 <?php include ('assets/inc/footer.php')?>
