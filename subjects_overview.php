@@ -33,7 +33,7 @@ if ($result->num_rows == 0) {
 //Pagination
 
 // Pagination setup
-$limit = 10; // records per page
+$limit = 5; // records per page
 $page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 $offset = ($page - 1) * $limit;
@@ -100,7 +100,7 @@ if ($result->num_rows == 0 && !empty($search)) {
         <td>{$row['code']}</td>
         <td>{$row['class']}</td>
         <td>
-          <a href='edit_subject.php?id={$row['id']}' class='btn btn-sm btn-outline-warning'>Edit</a>
+          <a href='edit_subject.php?id={$row['id']}' class='btn btn-sm btn-warning'>Edit</a>
         </td>
       </tr>";
         $i++;

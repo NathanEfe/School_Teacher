@@ -7,7 +7,6 @@ if (!isset($_SESSION["staff_id"])) {
 include('assets/inc/header.php');
 include 'db_connect.php';
 
-// ================== VALIDATE INPUT ==================
 $student_id = $_GET['id'] ?? '';
 if (empty($student_id)) {
     echo "<div class='alert alert-danger'>No student selected for editing.</div>";
@@ -15,7 +14,6 @@ if (empty($student_id)) {
     exit;
 }
 
-// ================== FETCH STUDENT INFO ==================
 $stmt = $conn->prepare("
     SELECT s.*, c.class_name
     FROM jss2_students_records s
@@ -33,7 +31,6 @@ if (!$student) {
     exit;
 }
 
-// ================== UPDATE HANDLER ==================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name         = trim($_POST['name'] ?? $student['name']);
     $class_id     = $student['class_id']; // keep current class
@@ -45,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle profile picture
     $profile_picture = $student['profile_picture']; 
     if (!empty($_FILES['profile_picture']['name'])) {
-        $uploadDir = "uploads/students/";
+        $uploadDir = "../uploads/students/";
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }

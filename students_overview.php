@@ -94,7 +94,7 @@ if ($result->num_rows == 0 && !empty($search)) {
                     <td>{$row['address']}</td>
                     <td>
                       <a href='view_student.php?id={$row['student_id']}' class='btn btn-sm btn-outline-primary'>View</a>
-                      <a href='edit_student.php?id={$row['student_id']}' class='btn btn-sm btn-outline-warning'>Edit</a>
+                      <a href='edit_student.php?id={$row['student_id']}' class='btn btn-sm btn-warning'>Edit</a>
                     </td>
                   </tr>";
                   $i++;
